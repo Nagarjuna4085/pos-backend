@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.thenocturn.pos.dto.ProductRequest;
 import com.thenocturn.pos.entity.Product;
 import com.thenocturn.pos.service.ProductService;
 
@@ -29,8 +30,8 @@ public class ProductController {
 
     // CREATE PRODUCT
     @PostMapping
-    public ResponseEntity<Product> createProduct(@RequestBody Product product) {
-        return ResponseEntity.ok(productService.createProduct(product));
+    public Product createProduct(@RequestBody ProductRequest request) {
+        return productService.createProduct(request);
     }
 
     // GET ALL PRODUCTS
