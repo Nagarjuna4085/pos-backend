@@ -59,18 +59,19 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public Product updateProduct(Long id, Product product) {
+	public Product updateProduct(Long id, ProductRequest request) {
+		
+		Category category = categoryRepository.findById(request.getCategoryId())
+	            .orElseThrow(() -> new RuntimeException("Category not found"));
 		Product existing = getProductById(id);
 
-		existing.setName(product.getName());
-		existing.setSku(product.getSku());
-		existing.setBarcode(product.getBarcode());
-		existing.setPrice(product.getPrice());
-		existing.setCostPrice(product.getCostPrice());
-		existing.setQuantity(product.getQuantity());
-		existing.setCategory(product.getCategory());
-		existing.setDescription(product.getDescription());
-		existing.setIsActive(product.getIsActive());
+		existing.setSku(request.getSku());
+		existing.setBarcode(request.getBarcode());
+		existing.setPrice(request.getPrice());
+		existing.setCostPrice(request.getCostPrice());
+		existing.setQuantity(request.getQuantity());
+		existing.setCategory(category);
+		existing.setDescription(request.getDescription());
 
 		return productRepository.save(existing);
 	}

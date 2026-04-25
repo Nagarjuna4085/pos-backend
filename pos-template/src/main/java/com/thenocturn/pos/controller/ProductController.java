@@ -50,8 +50,8 @@ public class ProductController {
     @PutMapping("/{id}")
     public ResponseEntity<Product> updateProduct(
             @PathVariable Long id,
-            @RequestBody Product product) {
-        return ResponseEntity.ok(productService.updateProduct(id, product));
+            @RequestBody ProductRequest request) {
+        return ResponseEntity.ok(productService.updateProduct(id, request));
     }
 
     // DELETE PRODUCT (SOFT DELETE)
