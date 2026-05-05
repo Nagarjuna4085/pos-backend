@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.thenocturn.pos.dto.ProductRequest;
 import com.thenocturn.pos.entity.Category;
 import com.thenocturn.pos.entity.Product;
+import com.thenocturn.pos.exception.ResourceNotFoundException;
 import com.thenocturn.pos.repository.CategoryRepository;
 import com.thenocturn.pos.repository.ProductRepository;
 import com.thenocturn.pos.service.ProductService;
@@ -50,7 +51,7 @@ public class ProductServiceImpl implements ProductService {
 
 	@Override
 	public Product getProductById(Long id) {
-		return productRepository.findById(id).orElseThrow(() -> new RuntimeException("Product not found"));
+		return productRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("product not found!!"));
 	}
 
 	@Override

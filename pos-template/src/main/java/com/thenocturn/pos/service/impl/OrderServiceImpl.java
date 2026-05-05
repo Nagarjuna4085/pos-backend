@@ -18,6 +18,7 @@ import com.thenocturn.pos.entity.PaymentStatus;
 import com.thenocturn.pos.entity.Product;
 import com.thenocturn.pos.repository.OrderRepository;
 import com.thenocturn.pos.repository.ProductRepository;
+import com.thenocturn.pos.service.InventoryService;
 import com.thenocturn.pos.service.OrderService;
 
 import jakarta.transaction.Transactional;
@@ -27,11 +28,15 @@ public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
+    private final InventoryService inventoryService;
+
 
     public OrderServiceImpl(OrderRepository orderRepository,
-                            ProductRepository productRepository) {
+                            ProductRepository productRepository,InventoryService inventoryService) {
         this.orderRepository = orderRepository;
         this.productRepository = productRepository;
+        this.inventoryService = inventoryService;
+
     }
 
     @Override
@@ -82,9 +87,15 @@ public class OrderServiceImpl implements OrderService {
             orderItems.add(item);
 
             // reduce stock (IMPORTANT)
-            product.setQuantity(product.getQuantity() - itemReq.getQuantity());
-            productRepository.save(product);
-
+//            product.setQuantity(product.getQuantity() - itemReq.getQuantity());
+//            productRepository.save(product);
+            
+            inventoryService.removeStock(
+                    product.getId(),
+                    itemReq.getQuantity(),
+                    "ORDER"
+            );
+            
             subtotal = subtotal.add(totalPrice);
         }
 
@@ -100,6 +111,8 @@ public class OrderServiceImpl implements OrderService {
 
         // STEP 4: attach items
         order.setItems(orderItems);
+        
+        Order savedOrder = orderRepository.save(order);
 
         // STEP 5: save order (cascade saves items)
         return OrderResponse.builder()
@@ -113,5 +126,79 @@ public class OrderServiceImpl implements OrderService {
                                 .build()
                 ).toList())
                 .build();
+    }
+    
+    
+    
+    @Override
+    @Transactional
+    public void cancelOrder(Long orderId) {
+
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+        
+        
+
+        // ❌ prevent double cancel
+        if (order.getOrderStatus() == OrderStatus.CANCELLED) {
+            throw new RuntimeException("Order already cancelled");
+        }
+
+        // ❌ prevent cancel after completion
+        if (order.getOrderStatus() == OrderStatus.COMPLETED) {
+            throw new RuntimeException("Completed order cannot be cancelled");
+        }
+
+        // STEP 1: restore stock for each item
+        for (OrderItem item : order.getItems()) {
+
+            Product product = item.getProduct();
+
+            product.setQuantity(product.getQuantity() + item.getQuantity());
+            productRepository.save(product);
+
+            // STEP 2: inventory log (IN)
+            inventoryService.addStock(
+                    product.getId(),
+                    item.getQuantity(),
+                    "ORDER_CANCEL"
+            );
+        }
+
+        // STEP 3: update order status
+        order.setOrderStatus(OrderStatus.CANCELLED);
+
+        orderRepository.save(order);
+    }
+    
+    @Override
+    public void markOrderAsPaid(Long orderId) {
+
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+
+        if (order.getOrderStatus() != OrderStatus.CREATED) {
+            throw new RuntimeException("Only CREATED orders can be paid");
+        }
+
+        order.setOrderStatus(OrderStatus.PAID);
+        order.setPaymentStatus(PaymentStatus.PAID);
+
+        orderRepository.save(order);
+    }
+    
+    @Override
+    public void completeOrder(Long orderId) {
+
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+
+        if (order.getOrderStatus() != OrderStatus.PAID) {
+            throw new RuntimeException("Only PAID orders can be completed");
+        }
+
+        order.setOrderStatus(OrderStatus.COMPLETED);
+
+        orderRepository.save(order);
     }
 }
