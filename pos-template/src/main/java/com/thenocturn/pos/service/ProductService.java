@@ -3,6 +3,7 @@ package com.thenocturn.pos.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
 import com.thenocturn.pos.dto.ProductRequest;
 import com.thenocturn.pos.entity.Product;
 
@@ -21,4 +22,6 @@ public interface ProductService {
     Product getBySku(String sku);
 
     List<Product> searchByName(String name);
+
+	Page<Product> getProducts(int page, int size);
 }

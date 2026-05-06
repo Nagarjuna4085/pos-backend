@@ -3,6 +3,9 @@ package com.thenocturn.pos.service.impl;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.thenocturn.pos.dto.ProductRequest;
@@ -92,5 +95,11 @@ public class ProductServiceImpl implements ProductService {
 	@Override
 	public List<Product> searchByName(String name) {
 		return productRepository.findByNameContainingIgnoreCase(name);
+	}
+	
+	@Override
+	public Page<Product> getProducts(int page, int size) {
+	    Pageable pageable = PageRequest.of(page, size);
+	    return productRepository.findAll(pageable);
 	}
 }

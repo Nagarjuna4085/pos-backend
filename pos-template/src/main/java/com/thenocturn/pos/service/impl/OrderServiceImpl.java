@@ -21,6 +21,10 @@ import com.thenocturn.pos.repository.ProductRepository;
 import com.thenocturn.pos.service.EmailService;
 import com.thenocturn.pos.service.InventoryService;
 import com.thenocturn.pos.service.OrderService;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Page;
+
 
 import jakarta.transaction.Transactional;
 
@@ -214,5 +218,11 @@ public class OrderServiceImpl implements OrderService {
         order.setOrderStatus(OrderStatus.COMPLETED);
 
         orderRepository.save(order);
+    }
+    
+    @Override
+    public Page<Order> getOrders(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return orderRepository.findAll(pageable);
     }
 }
