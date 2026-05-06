@@ -1,36 +1,51 @@
 package com.thenocturn.pos.service.impl;
 
-import org.springframework.mail.SimpleMailMessage;
+import com.thenocturn.pos.dto.OrderResponse;
+import com.thenocturn.pos.service.EmailService;
+import jakarta.mail.internet.MimeMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-
-import com.thenocturn.pos.service.EmailService;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 @Service
 public class EmailServiceImpl implements EmailService {
 
     private final JavaMailSender mailSender;
+    private final TemplateEngine templateEngine;
 
-    public EmailServiceImpl(JavaMailSender mailSender) {
+    public EmailServiceImpl(JavaMailSender mailSender,
+                            TemplateEngine templateEngine) {
         this.mailSender = mailSender;
+        this.templateEngine = templateEngine;
     }
 
     @Override
     @Async
-    public void sendOrderConfirmation(String toEmail, String orderNumber, String customerName) {
+    public void sendOrderConfirmationHtml(String toEmail, OrderResponse order) {
 
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(toEmail);
-        message.setSubject("Order Confirmation - " + orderNumber);
+        try {
+            Context context = new Context();
+            context.setVariable("customerName", order.getCustomerName());
+            context.setVariable("orderNumber", order.getOrderNumber());
+            context.setVariable("items", order.getItems());
+            context.setVariable("totalAmount", order.getTotalAmount());
 
-        message.setText(
-                "Hello " + customerName + ",\n\n" +
-                "Your order has been placed successfully.\n" +
-                "Order Number: " + orderNumber + "\n\n" +
-                "Thank you for shopping with us!"
-        );
+            String htmlContent = templateEngine.process("order-confirmation", context);
 
-        mailSender.send(message);
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+            helper.setTo(toEmail);
+            helper.setSubject("Order Confirmation - " + order.getOrderNumber());
+            helper.setText(htmlContent, true); // TRUE = HTML
+
+            mailSender.send(message);
+
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to send email");
+        }
     }
 }

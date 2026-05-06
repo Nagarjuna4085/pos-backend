@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Order Confirmation</title>
+    <style>
+        body { font-family: Arial; background: #f5f5f5; padding: 20px; }
+        .container { background: #fff; padding: 20px; border-radius: 10px; }
+        .header { font-size: 22px; font-weight: bold; margin-bottom: 10px; }
+        .table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .table th, .table td { border: 1px solid #ddd; padding: 8px; }
+        .total { font-weight: bold; text-align: right; margin-top: 15px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">Order Confirmation</div>
+
+    <p>Hello <span th:text="${customerName}"></span>,</p>
+    <p>Your order has been placed successfully.</p>
+
+    <p><b>Order Number:</b> <span th:text="${orderNumber}"></span></p>
+
+    <table class="table">
+        <tr>
+            <th>Product</th>
+            <th>Qty</th>
+            <th>Price</th>
+        </tr>
+
+        <tr th:each="item : ${items}">
+            <td th:text="${item.productName}"></td>
+            <td th:text="${item.quantity}"></td>
+            <td th:text="${item.unitPrice}"></td>
+        </tr>
+    </table>
+
+    <p class="total">
+        Total: <span th:text="${totalAmount}"></span>
+    </p>
+
+    <p>Thank you for shopping with us!</p>
+</div>
+
+</body>
+</html>

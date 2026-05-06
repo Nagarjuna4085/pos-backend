@@ -13,6 +13,8 @@ public class OrderResponse {
     private Long id;
     private String orderNumber;
     private BigDecimal totalAmount;
+    private String customerName;   
+
 
     private List<OrderItemResponse> items;
 }

@@ -117,19 +117,12 @@ public class OrderServiceImpl implements OrderService {
         
         Order savedOrder = orderRepository.save(order);
         
-        
-     // SEND EMAIL (ASYNC)
-        emailService.sendOrderConfirmation(
-                request.getCustomerEmail(),
-                savedOrder.getOrderNumber(),
-                savedOrder.getCustomerName()
-        );
-
-        // STEP 5: save order (cascade saves items)
-        return OrderResponse.builder()
-                .orderNumber(order.getOrderNumber())
-                .totalAmount(order.getTotalAmount())
-                .items(order.getItems().stream().map(item ->
+        OrderResponse response = OrderResponse.builder()
+                .id(savedOrder.getId())
+                .orderNumber(savedOrder.getOrderNumber())
+                .customerName(savedOrder.getCustomerName())
+                .totalAmount(savedOrder.getTotalAmount())
+                .items(savedOrder.getItems().stream().map(item ->
                         OrderItemResponse.builder()
                                 .productName(item.getProduct().getName())
                                 .quantity(item.getQuantity())
@@ -137,6 +130,16 @@ public class OrderServiceImpl implements OrderService {
                                 .build()
                 ).toList())
                 .build();
+        
+        
+     // SEND EMAIL (ASYNC)
+        emailService.sendOrderConfirmationHtml(
+                request.getCustomerEmail(),
+                response
+        );
+
+        // STEP 5: save order (cascade saves items)
+        return response;
     }
     
     
