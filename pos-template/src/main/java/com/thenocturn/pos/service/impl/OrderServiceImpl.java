@@ -133,7 +133,7 @@ public class OrderServiceImpl implements OrderService {
         
         
      // SEND EMAIL (ASYNC)
-        emailService.sendOrderConfirmationHtml(
+        emailService.sendOrderEmailWithInvoice(
                 request.getCustomerEmail(),
                 response
         );
