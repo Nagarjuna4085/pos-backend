@@ -7,19 +7,22 @@ import com.thenocturn.pos.entity.PaymentMethod;
 
 import lombok.Getter;
 import lombok.Setter;
+
 @Getter
 @Setter
 public class OrderRequest {
 
-    private String customerName;
+	private String customerName;
 
-    private String customerPhone;
+	private String customerPhone;
+	
+	private String customerEmail;
 
-    private BigDecimal discount;
+	private BigDecimal discount;
 
-    private BigDecimal tax;
+	private BigDecimal tax;
 
-    private PaymentMethod paymentMethod;
+	private PaymentMethod paymentMethod;
 
-    private List<OrderItemRequest> items;
+	private List<OrderItemRequest> items;
 }

@@ -38,6 +38,7 @@ public class Order {
 
     private String customerName;
     private String customerPhone;
+    private String customerEmail;
 
     private BigDecimal subtotal;
     private BigDecimal discount;

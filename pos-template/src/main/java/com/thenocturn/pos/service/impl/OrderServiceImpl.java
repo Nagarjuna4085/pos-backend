@@ -18,6 +18,7 @@ import com.thenocturn.pos.entity.PaymentStatus;
 import com.thenocturn.pos.entity.Product;
 import com.thenocturn.pos.repository.OrderRepository;
 import com.thenocturn.pos.repository.ProductRepository;
+import com.thenocturn.pos.service.EmailService;
 import com.thenocturn.pos.service.InventoryService;
 import com.thenocturn.pos.service.OrderService;
 
@@ -29,13 +30,15 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
     private final InventoryService inventoryService;
-
+    private final EmailService emailService;
 
     public OrderServiceImpl(OrderRepository orderRepository,
-                            ProductRepository productRepository,InventoryService inventoryService) {
+                            ProductRepository productRepository,InventoryService inventoryService, EmailService emailService) {
         this.orderRepository = orderRepository;
         this.productRepository = productRepository;
         this.inventoryService = inventoryService;
+        this.emailService = emailService;
+
 
     }
 
@@ -113,6 +116,14 @@ public class OrderServiceImpl implements OrderService {
         order.setItems(orderItems);
         
         Order savedOrder = orderRepository.save(order);
+        
+        
+     // SEND EMAIL (ASYNC)
+        emailService.sendOrderConfirmation(
+                request.getCustomerEmail(),
+                savedOrder.getOrderNumber(),
+                savedOrder.getCustomerName()
+        );
 
         // STEP 5: save order (cascade saves items)
         return OrderResponse.builder()
