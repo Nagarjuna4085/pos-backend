@@ -29,6 +29,10 @@ public class SecurityConfig {
 
                 // PUBLIC
                 .requestMatchers("/api/auth/**").permitAll()
+                
+
+                // ✅ IMPORTANT: allow static files
+                .requestMatchers("/uploads/**").permitAll()
 
                 // ADMIN ONLY
                 .requestMatchers("/api/dashboard/**").hasRole("ADMIN")

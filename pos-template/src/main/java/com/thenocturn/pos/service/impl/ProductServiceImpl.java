@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.thenocturn.pos.dto.ProductRequest;
 import com.thenocturn.pos.entity.Category;
@@ -15,7 +16,6 @@ import com.thenocturn.pos.exception.ResourceNotFoundException;
 import com.thenocturn.pos.repository.CategoryRepository;
 import com.thenocturn.pos.repository.ProductRepository;
 import com.thenocturn.pos.service.ProductService;
-
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -101,5 +101,28 @@ public class ProductServiceImpl implements ProductService {
 	public Page<Product> getProducts(int page, int size) {
 	    Pageable pageable = PageRequest.of(page, size);
 	    return productRepository.findAll(pageable);
+	}
+	
+	
+	@Override
+	public String uploadImage(MultipartFile file) {
+
+	    try {
+	        String uploadDir = "uploads/";
+
+	        String fileName = java.util.UUID.randomUUID()
+	                + "_" + file.getOriginalFilename();
+
+	        java.nio.file.Path path = java.nio.file.Paths.get(uploadDir + fileName);
+
+	        java.nio.file.Files.createDirectories(path.getParent());
+
+	        java.nio.file.Files.copy(file.getInputStream(), path);
+
+	        return "/uploads/" + fileName;
+
+	    } catch (Exception e) {
+	        throw new RuntimeException("Image upload failed");
+	    }
 	}
 }

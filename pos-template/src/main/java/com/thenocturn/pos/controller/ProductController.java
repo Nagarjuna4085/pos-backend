@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.thenocturn.pos.dto.ProductRequest;
 import com.thenocturn.pos.entity.Product;
@@ -26,6 +27,13 @@ public class ProductController {
 
     public ProductController(ProductService productService) {
         this.productService = productService;
+    }
+    
+    
+    // IMAGE UPLOAD API
+    @PostMapping("/upload")
+    public String uploadImage(@RequestParam MultipartFile file) throws java.io.IOException {
+        return productService.uploadImage(file);
     }
 
     // CREATE PRODUCT
