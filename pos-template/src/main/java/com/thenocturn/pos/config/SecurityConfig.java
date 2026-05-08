@@ -15,6 +15,8 @@ public class SecurityConfig {
 
     public SecurityConfig(JwtAuthFilter jwtAuthFilter) {
         this.jwtAuthFilter = jwtAuthFilter;
+        
+        
     }
 
     @Bean
@@ -22,6 +24,8 @@ public class SecurityConfig {
 
         http
             .csrf(csrf -> csrf.disable())
+            // ✅ ENABLE CORS
+            .cors(cors -> {})
             .sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )

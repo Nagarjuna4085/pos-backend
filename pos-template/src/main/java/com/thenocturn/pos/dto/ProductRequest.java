@@ -8,6 +8,11 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ProductRequest {
+	
+	public void setImageUrl(String imageUrl) {
+	    System.out.println("SETTER CALLED: " + imageUrl);
+	    this.imageUrl = imageUrl;
+	}
 
     private String name;
     private String sku;

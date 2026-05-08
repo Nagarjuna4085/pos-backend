@@ -49,6 +49,6 @@ public class Product {
 
 	private String createdBy;
 	
-	
+	@Column(name = "image_url")
 	private String imageUrl;
 }

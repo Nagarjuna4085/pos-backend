@@ -30,8 +30,12 @@ public class ProductServiceImpl implements ProductService {
 
 	@Override
 	public Product createProduct(ProductRequest request) {
+		System.out.println("DEBUG 1: Request Image URL: " + request.getImageUrl()); // Check if request has it
+	
 		Category category = categoryRepository.findById(request.getCategoryId())
 	            .orElseThrow(() -> new RuntimeException("Category not found"));
+		if(request.getImageUrl() == null) throw new RuntimeException("no image data");
+		
 		
 		Product product = Product.builder()
 	            .name(request.getName())
@@ -43,13 +47,24 @@ public class ProductServiceImpl implements ProductService {
 	            .description(request.getDescription())
 	            .category(category)
 	            .isActive(true)
+	            .imageUrl(request.getImageUrl()) // <--- Verify this line
 	            .build();
+		
+		System.err.println("===> PRODUCT BEFORE SAVE: " + product.getImageUrl());
 		
 		if(productRepository.findBySku(product.getSku()).isPresent()) {
 		    throw new RuntimeException("SKU already exists");
 		}
+		
+//		
 //		product.setIsActive(true);
-		return productRepository.save(product);
+//		return productRepository.save(product);
+		
+		Product savedProduct = productRepository.save(product);
+	    
+	    System.out.println("DEBUG 3: Saved Product Image URL: " + savedProduct.getImageUrl()); // Check if DB saved it
+	    
+	    return savedProduct;
 	}
 
 	@Override
