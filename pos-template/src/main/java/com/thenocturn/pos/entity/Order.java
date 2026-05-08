@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -46,12 +47,14 @@ public class Order {
     private BigDecimal totalAmount;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "payment_status")
     private PaymentStatus paymentStatus;
 
     @Enumerated(EnumType.STRING)
     private PaymentMethod paymentMethod;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "order_status")
     private OrderStatus orderStatus;
 
     private LocalDateTime createdAt;

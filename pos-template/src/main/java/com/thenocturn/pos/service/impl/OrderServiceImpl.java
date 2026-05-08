@@ -199,7 +199,7 @@ public class OrderServiceImpl implements OrderService {
             throw new RuntimeException("Only CREATED orders can be paid");
         }
 
-        order.setOrderStatus(OrderStatus.PAID);
+        order.setOrderStatus(OrderStatus.CONFIRMED);
         order.setPaymentStatus(PaymentStatus.PAID);
 
         orderRepository.save(order);
@@ -211,7 +211,7 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
 
-        if (order.getOrderStatus() != OrderStatus.PAID) {
+        if (order.getPaymentStatus() != PaymentStatus.PAID) {
             throw new RuntimeException("Only PAID orders can be completed");
         }
 

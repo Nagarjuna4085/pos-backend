@@ -41,10 +41,13 @@ public class SecurityConfig {
                 // ADMIN ONLY
                 .requestMatchers("/api/dashboard/**").hasRole("ADMIN")
                 .requestMatchers("/api/inventory/**").hasRole("ADMIN")
+                .requestMatchers("/api/categories/**").hasRole("ADMIN")
+                
 
                 // ADMIN + CASHIER
                 .requestMatchers("/api/products/**").hasAnyRole("ADMIN", "CASHIER")
                 .requestMatchers("/api/orders/**").hasAnyRole("ADMIN", "CASHIER")
+                
 
                 .anyRequest().authenticated()
             )
