@@ -1,14 +1,16 @@
 package com.thenocturn.pos.service.impl;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
 import com.thenocturn.pos.dto.AuthResponse;
 import com.thenocturn.pos.dto.LoginRequest;
 import com.thenocturn.pos.dto.RegisterRequest;
+import com.thenocturn.pos.dto.UserDTO;
 import com.thenocturn.pos.entity.User;
 import com.thenocturn.pos.repository.UserRepository;
 import com.thenocturn.pos.security.JwtService;
 import com.thenocturn.pos.service.UserService;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -60,10 +62,17 @@ public class UserServiceImpl implements UserService {
         }
 
         String token = jwtService.generateToken(user.getEmail(),user.getRole().name());
+        
+        UserDTO userDto = UserDTO.builder()
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .role(user.getRole())
+                .build();
 
         return AuthResponse.builder()
                 .token(token)
                 .message("Login successful")
+                .user(userDto) 
                 .build();
     }
 }
