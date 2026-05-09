@@ -32,7 +32,8 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
 
                 // PUBLIC
-                .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/api/auth/login").permitAll()
+                .requestMatchers("/api/auth/register").hasRole("ADMIN")
                 
 
                 // ✅ IMPORTANT: allow static files
